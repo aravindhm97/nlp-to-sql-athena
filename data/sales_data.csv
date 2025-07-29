@@ -1,0 +1,16 @@
+transaction_id,product,amount,country,year
+1,Laptop,1200,USA,2023
+2,Phone,800,Canada,2023
+3,Tablet,500,UK,2023
+4,Laptop,1100,Germany,2022
+5,Headphones,150,USA,2023
+6,Mouse,50,Canada,2023
+7,Keyboard,80,UK,2023
+8,Monitor,300,Germany,2023
+9,Laptop,1000,France,2023
+10,Phone,750,Japan,2023
+11,Tablet,450,Australia,2023
+12,Laptop,1300,USA,2022
+13,Phone,850,Canada,2022
+14,Tablet,550,UK,2022
+15,Headphones,200,USA,2022

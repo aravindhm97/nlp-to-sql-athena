@@ -3,3 +3,6 @@ __pycache__/
 .env
 secrets.toml
 *.log
+.venv/
+venv/
+.envrc
