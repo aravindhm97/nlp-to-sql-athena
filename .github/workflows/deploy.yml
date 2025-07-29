@@ -1,0 +1,52 @@
+name: Auto-Deploy to AWS + Streamlit
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  AWS_REGION: ap-south-1
+  ATHENA_DB: sales_demo
+  BUCKET_PREFIX: nlp-sql-${{ github.run_id }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup AWS Resources
+        run: |
+          chmod +x scripts/setup_aws.sh
+          ./scripts/setup_aws.sh \
+            --region ${{ env.AWS_REGION }} \
+            --bucket-prefix ${{ env.BUCKET_PREFIX }} \
+            --athena-db ${{ env.ATHENA_DB }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Deploy to Streamlit Cloud
+        uses: streamlit/github-deploy-apps@v1.0.1
+        with:
+          streamlit-sharing-token: ${{ secrets.STREAMLIT_SHARING_TOKEN }}
+          app-name: nlp-to-sql-athena
+          app-file: app.py
+          requirements-file: requirements.txt
+          secrets: |
+            [aws]
+            region = "${{ env.AWS_REGION }}"
+            [athena]
+            database = "${{ env.ATHENA_DB }}"
+            output_location = "s3://${{ env.BUCKET_PREFIX }}-results/"
+            [huggingface]
+            token = "${{ secrets.HF_TOKEN }}"
